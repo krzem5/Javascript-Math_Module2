@@ -26,9 +26,9 @@ MATH.cot=function(a){
 for (var k of ["abs","ceil","exp","floor","log","log1p","log2","log10","min","max","pow","round","random","sqrt","E","LN2","LN10","LOG2E","LOG10E","PI","SQRT1_2","SQRT2"]){MATH[k]=Math[k]}
 MATH.perlin={}
 MATH.perlin._ni=function (...args){
-	x=args[0]||0
-	y=args[1]||0
-	z=args[2]||0
+	let x=args[0]||0
+	let y=args[1]||0
+	let z=args[2]||0
 	if (args[3]){console.warn("4D Perlin Noise is not avaible!")}
 	var p=[151,160,137,91,90,15,131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,190,6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,88,237,149,56,87,74,20,125,136,171,168,68,175,74,165,71,134,139,48,27,166,77,146,158,231,83,111,229,122,60,211,133,230,220,105,92,41,55,46,245,40,244,102,143,54,65,25,63,161,1,216,80,73,209,76,132,187,208,89,18,169,200,196,135,130,116,188,159,86,164,100,109,198,173,186,3,64,52,217,226,250,124,123,5,202,38,147,118,126,255,82,85,212,207,206,59,227,47,16,58,17,182,189,28,42,223,183,170,213,119,248,152,2,44,154,163,70,221,153,101,155,167,43,172,9,129,22,39,253,19,98,108,110,79,113,224,232,178,185,112,104,218,246,97,228,251,34,242,193,238,210,144,12,191,179,162,241,81,51,145,235,249,14,239,107,49,192,214,31,181,199,106,157,184,84,204,176,115,121,50,45,127,4,150,254,138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180]
 	for (var i=0;i<256;i++){p[256+i]=p[i]}
@@ -53,7 +53,7 @@ MATH.perlin._ni=function (...args){
 	var xMinus1=x-1,yMinus1=y-1,zMinus1=z-1
 	var u=fade(x),v=fade(y),w=fade(z)
 	var A=p[X]+Y,AA=p[A]+Z,AB=p[A+1]+Z,B=p[X+1]+Y,BA=p[B]+Z,BB=p[B+1]+Z
-	return lerp(w,lerp(v,lerp(u,grad(p[AA],x,y,z),grad(p[BA],xMinus1,y,z)),lerp(u,grad(p[AB],x,yMinus1,z),(p[BB],xMinus1,yMinus1,z))),lerp(v,lerp(u,grad(p[AA+1],x,y,zMinus1),grad(p[BA+1],xMinus1,y,z-1)),lerp(u,grad(p[AB+1],x,yMinus1,zMinus1),grad(p[BB+1],xMinus1,yMinus1,zMinus1))))
+	return lerp(w,lerp(v,lerp(u,grad(p[AA],x,y,z),grad(p[BA],xMinus1,y,z)),lerp(u,grad(p[AB],x,yMinus1,z),grad(p[BB],xMinus1,yMinus1,z))),lerp(v,lerp(u,grad(p[AA+1],x,y,zMinus1),grad(p[BA+1],xMinus1,y,z-1)),lerp(u,grad(p[AB+1],x,yMinus1,zMinus1),grad(p[BB+1],xMinus1,yMinus1,zMinus1))))
 }
 MATH.perlin._nc=[MATH.random(-0.1,0.1),MATH.random(-0.1,0.1),MATH.random(-0.1,0.1)]
 MATH.vector={}
@@ -127,7 +127,7 @@ MATH.vector._vec=class _Vec{
 		return this.normalize().mult(a)
 	}
 	transform(m){
-		if (!m.constructor.name=="TMatrix"){return this}
+		if (m.constructor.name!="TMatrix"){return this}
 		var a=this.toMatrix(true)
 		a.apply(m)
 		var b=[]
@@ -136,7 +136,6 @@ MATH.vector._vec=class _Vec{
 		return this
 	}
 	dist(...a){
-		a=this._val(a)
 		var v=parseInt(this.constructor.name.replace("Vec",""))
 		if (v==1){v=new MATH.vector._vec1(this)}
 		if (v==2){v=new MATH.vector._vec2(this)}
@@ -262,7 +261,7 @@ MATH.matrix._mtr=class Matrix{
 		return this
 	}
 	apply(tm){
-		if (!tm.constructor.name=="TMatrix"){return this}
+		if (tm.constructor.name!="TMatrix"){return this}
 		this._opr(tm,function(a,b){return a*b},true)
 	}
 	set(x,y,v){
@@ -404,7 +403,6 @@ MATH.transform._3.scale=function(a,b,c,fa,fb,fc){
 	return new MATH.matrix._tmtr([[a,0,0,fa*(1-a)],[0,b,0,fb*(1-b)],[0,0,c,fc*(1-c)],[0,0,0,1]])
 }
 MATH.transform._3.rotX=function(a,fa,fb,fc){
-	fa=fa||0
 	fb=fb||0
 	fc=fc||0
 	a=MATH.radians(a)
@@ -412,7 +410,6 @@ MATH.transform._3.rotX=function(a,fa,fb,fc){
 }
 MATH.transform._3.rotY=function(a,fa,fb,fc){
 	fa=fa||0
-	fb=fb||0
 	fc=fc||0
 	a=MATH.radians(a)
 	return new MATH.matrix._tmtr([[MATH.cos(a),0,-MATH.sin(a),fa*(1-MATH.cos(a))+fc*Math.sin(a)],[0,1,0,0],[MATH.sin(a),0,MATH.cos(a),fc*(1-MATH.cos(a))+fa*Math.sin(a)],[0,0,0,1]])
@@ -420,7 +417,6 @@ MATH.transform._3.rotY=function(a,fa,fb,fc){
 MATH.transform._3.rotZ=function(a,fa,fb,fc){
 	fa=fa||0
 	fb=fb||0
-	fc=fc||0
 	a=MATH.radians(a)
 	return new MATH.matrix._tmtr([[MATH.cos(a),-MATH.sin(a),0,fa*(1-MATH.cos(a))+fb*Math.sin(a)],[MATH.sin(a),MATH.cos(a),0,fb*(1-MATH.cos(a))+fa*Math.sin(a)],[0,0,1,0],[0,0,0,1]])
 }
@@ -809,7 +805,7 @@ MATH.load=function(o){
 	for (var f of Object.keys(MATH)){
 		var v=MATH[f]
 		function isJ(v){try{return JSON.stringify(v)===JSON.stringify(JSON.parse(JSON.stringify(v)))}catch(e){return false}}
-		if (!!v&& typeof v==="object"&&v!==null&&!(v instanceof Array)&&!(v instanceof Date)&&isJ(v)){continue}
+		if (!!v&&typeof v==="object"&&!(v instanceof Array)&&!(v instanceof Date)&&isJ(v)){continue}
 		o[f]=v
 	}
 }
